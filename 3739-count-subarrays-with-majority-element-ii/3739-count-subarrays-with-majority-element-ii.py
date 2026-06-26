@@ -1,0 +1,48 @@
+class Fenwick:
+
+    def __init__(self, n):
+        self.n = n
+        self.bit = [0] * (n + 2)
+
+    def update(self, i, val):
+        while i <= self.n:
+            self.bit[i] += val
+            i += i & -i
+
+    def query(self, i):
+        s = 0
+        while i > 0:
+            s += self.bit[i]
+            i -= i & -i
+        return s
+
+
+class Solution:
+    def countMajoritySubarrays(self, nums, target):
+
+        n = len(nums)
+
+        if target not in nums:
+            return 0
+
+        size = 2 * n + 5
+        bit = Fenwick(size)
+
+        offset = n + 2
+        prefix = offset
+
+        bit.update(prefix, 1)
+
+        ans = 0
+
+        for x in nums:
+
+            if x == target:
+                prefix += 1
+            else:
+                prefix -= 1
+
+            ans += bit.query(prefix - 1)
+            bit.update(prefix, 1)
+
+        return ans
